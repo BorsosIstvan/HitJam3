@@ -1,6 +1,6 @@
 <?php
 session_start();
-//require_once('hj3_db.php');
+require_once('hj3_db.php');
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -21,7 +21,7 @@ function haalWillekeurigNummer($db) {
     if (empty($preview_url)) {
         $schone_artiest = str_replace('&', ' ', $song['artist']);
         $zoekterm = urlencode($schone_artiest . " " . $song['title']);
-        $api_url = "https://itunes.apple.com/search?term=" . $zoekterm . "&limit=1&entity=song";
+        $api_url = "https://apple.com" . $zoekterm . "&limit=1&entity=song";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -72,7 +72,7 @@ function haalWillekeurigNummer($db) {
 
 try {
     $db_path = '/var/www/html/HitData/hitjam3.db';
-    $db = new PDO('sqlite:' .$db_path);
+    $db = new PDO("sqlite:" .$db_path);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $resultaat = haalWillekeurigNummer($db);
