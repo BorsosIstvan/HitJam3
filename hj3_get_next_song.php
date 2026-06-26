@@ -39,6 +39,8 @@ try {
         $response = curl_exec($ch);
         curl_close($ch);
 
+        $preview_url = "";
+
         if ($response) {
             $json = json_decode($response, true);
             if (isset($json['results'][0]['previewUrl'])) {
