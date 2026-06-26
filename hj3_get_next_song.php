@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('hj3_db.php');
+//require_once('hj3_db.php');
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -72,7 +72,7 @@ function haalWillekeurigNummer($db) {
 
 try {
     $db_path = '/var/www/html/HitData/hitjam3.db';
-    $db = new PDO("sqlite:" .$db_path);
+    $db = new PDO('sqlite:' .$db_path);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $resultaat = haalWillekeurigNummer($db);
