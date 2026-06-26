@@ -71,7 +71,8 @@ function haalWillekeurigNummer($db) {
 }
 
 try {
-    $db = new PDO("sqlite:hitjam3.db");
+    $db_path = '/var/www/html/HitData/hitjam3.db';
+    $db = new PDO("sqlite:" .$db_path);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $resultaat = haalWillekeurigNummer($db);
