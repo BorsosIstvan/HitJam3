@@ -7,8 +7,8 @@ error_reporting(E_ALL);
 header('Content-Type: text/html; charset=utf-8');
 echo "<h1>HitJam3 Database Builder</h1>";
 
-$db_file = 'hitjam3.db';
-$old_db_file = 'hitjam2.db';
+$db_file = '/var/www/html/hitjam3.db';
+$old_db_file = '/var/www/html/HitData/hitjam2.db';
 
 try {
     // 1. Maak of open de nieuwe HitJam3 SQLite database
