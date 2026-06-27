@@ -217,7 +217,10 @@
 
         <div class="play-box">
             <button class="btn-audio" id="btn-start">⚡ START PLAY</button>
-            
+            <!-- De visuele aftelbalk -->
+            <div style="width: 100%; background-color: #222; height: 6px; border-radius: 3px; margin-top: 15px; overflow: hidden;">
+                <div id="timer-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ff9500, #ff2d55); transition: width 0.1s linear;"></div>
+            </div>
             <div class="vu-meter">
                 <div class="vu-bar"></div><div class="vu-bar"></div><div class="vu-bar"></div>
                 <div class="vu-bar"></div><div class="vu-bar"></div><div class="vu-bar"></div>
@@ -235,38 +238,75 @@
         let vuInterval = null;
         let huidigeScore = 0;
         let gameActief = false;
+        let timerTimeout = null;
+        let timerInterval = null;
 
         document.getElementById('btn-start').addEventListener('click', startNieuwNummer);
 
-        function startNieuwNummer() {
-            if (audioPlayer) { audioPlayer.pause(); }
-            stopVuMeter();
-            resetKaarten();
-            
-            document.getElementById('btn-start').innerText = "⏳ SCANNING...";
-            document.getElementById('instruction-text').innerText = "Inladen...";
+    function startNieuwNummer() {
+        if (audioPlayer) { audioPlayer.pause(); }
+        stopVuMeter();
+        resetKaarten();
+        
+        // Reset de visuele timerbalk naar 100%
+        document.getElementById('timer-bar').style.width = '100%';
+        clearTimeout(timerTimeout);
+        clearInterval(timerInterval);
+        
+        document.getElementById('btn-start').innerText = "⏳ SCANNING...";
+        document.getElementById('instruction-text').innerText = "Inladen...";
 
-            fetch('hj3_get_next_song.php')
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('btn-start').innerText = "⚡ START PLAY";
+        fetch('hj3_get_next_song.php')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('btn-start').innerText = "⚡ START PLAY";
+                
+                if (data.status === 'success') {
+                    rondeGegevens = data;
+                    gameActief = true;
                     
-                    if (data.status === 'success') {
-                        rondeGegevens = data;
-                        gameActief = true;
+                    // Start Apple audio stream direct
+                    audioPlayer = new Audio(data.preview_url);
+                    audioPlayer.play();
+                    startVuMeter();
+                    bouwGemixtKaarten();
+
+                    // START DE 30 SECONDE TIMER
+                    let startTijd = Date.now();
+                    let totaleDuur = 30000; // 30 seconden in milliseconden
+
+                    // Update de balk elke 100 milliseconden voor een vloeiende beweging
+                    timerInterval = setInterval(() => {
+                        let verstreken = Date.now() - startTijd;
+                        let percentage = Math.max(0, 100 - (verstreken / totaleDuur) * 100);
+                        document.getElementById('timer-bar').style.width = percentage + '%';
+                    }, 100);
+
+                    // Als de 30 seconden EXACT voorbij zijn, voeren we deze actie uit:
+                    timerTimeout = setTimeout(() => {
+                        clearInterval(timerInterval);
+                        gameActief = false; // Kaarten bevriezen
                         
-                        // Start Apple audio stream direct
-                        audioPlayer = new Audio(data.preview_url);
-                        audioPlayer.play();
-                        startVuMeter();
+                        if (audioPlayer) { audioPlayer.pause(); } // Muziek stopt!
+                        stopVuMeter(); // VU-meter stopt!
                         
-                        // Start de gemixte kaarten-opbouw
-                        bouwGemixtKaarten();
-                    } else {
-                        document.getElementById('instruction-text').innerText = "Fout bij laden.";
-                    }
-                });
-        }
+                        document.getElementById('instruction-text').innerText = "⏰ TIJD IS OM!";
+                        
+                        // Onthul wel de antwoorden zodat spelers zien wat het was
+                        for (let i = 0; i < 4; i++) {
+                            document.getElementById(`card-${i}`).classList.remove('active');
+                            const revealDiv = document.getElementById(`reveal-${i}`);
+                            revealDiv.style.display = 'block';
+                            revealDiv.innerHTML = `<strong>${rondeGegevens.artist}</strong><br>${rondeGegevens.title}<br>📅 ${rondeGegevens.year}`;
+                        }
+                        document.getElementById(`card-${indexJuisteAntwoord}`).classList.add('card-correct');
+                    }, totaleDuur);
+
+                } else {
+                    document.getElementById('instruction-text').innerText = "Fout bij laden.";
+                }
+            });
+    }
 
         function bouwGemixtKaarten() {
             document.getElementById('instruction-text').innerText = "💥 VIND DE JUISTE MATCH!";
@@ -310,8 +350,9 @@
             if (!gameActief || indexJuisteAntwoord === null) return;
             gameActief = false; // Voorkom dubbelklikken op mobiel
 
-            //if (audioPlayer) { audioPlayer.pause(); }
-            //stopVuMeter();
+            // De timer stoppen omdat de speler op tijd heeft gekozen
+            clearTimeout(timerTimeout);
+            clearInterval(timerInterval);
 
             // De Grote Onthulling op álle kaarten!
             for (let i = 0; i < 4; i++) {
@@ -332,19 +373,11 @@
                 huidigeScore += 10;
                 document.getElementById('score-val').innerText = huidigeScore;
                 document.getElementById('instruction-text').innerText = "🔥 BINGO! +10 PUNTEN";
-                
-                // Speel applaus luid af
-                //document.getElementById('sound-applause').currentTime = 0;
-                //document.getElementById('sound-applause').play();
             } else {
                 // VERLIEZER! 😢
                 gekozenKaart.classList.add('card-wrong');
                 juisteKaart.classList.add('card-correct');
                 document.getElementById('instruction-text').innerText = "❌ FOUTE KAART!";
-                
-                // Speel fout-sound luid af
-                //document.getElementById('sound-wrong').currentTime = 0;
-                //document.getElementById('sound-wrong').play();
             }
         }
 
