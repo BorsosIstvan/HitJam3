@@ -1,19 +1,16 @@
 <?php
 require_once('hj3_db.php');
-// Controleer of de gebruiker netjes is ingelogd via login.php
+// Controleer of de gebruiker is ingelogd
 if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
-
-// Bepaal de rol van de ingelogde gebruiker
-$is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : true;
 ?>
 <!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>HitJam 3 - Premium Multiplayer</title>
+    <title>HitJam 3 - Arcade Engine</title>
     <style>
-        /* Exact dezelfde solide mobiele basis als HJ2, maar met de premium rode/oranje arcade look */
+        /* Premium Mobiele Basis (Zwart, Rood, Neon-Oranje) */
         body { 
             font-family: 'Segoe UI', -apple-system, sans-serif; 
             margin: 0; 
@@ -49,18 +46,9 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
         }
 
         .user-welcome { font-size: 14px; color: #b3b3b3; margin-bottom: 5px; }
-        .role-badge { font-size: 11px; font-weight: bold; color: #ff9500; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .score-board { font-size: 13px; font-weight: bold; color: #ff9500; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; }
 
-        .score-board {
-            font-size: 13px;
-            font-weight: bold;
-            color: #ff9500;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        /* 2x2 Grid geoptimaliseerd voor het telefoonscherm */
+        /* 2x2 Grid voor mobiele telefoons */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -69,7 +57,7 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             width: 100%;
         }
 
-        /* De Speelkaarten met subtiele fotolook-achtergrond */
+        /* Speelkaarten */
         .game-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -87,7 +75,6 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             transition: all 0.2s ease;
         }
 
-        /* Actieve kaarten lichten prachtig rood/oranje op */
         .game-card.active {
             border-color: #ff2d55;
             box-shadow: 0 4px 15px rgba(255, 45, 85, 0.2);
@@ -97,26 +84,18 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             background: rgba(255, 45, 85, 0.1);
         }
 
-        .card-badge {
-            position: absolute;
-            top: 8px;
-            font-size: 9px;
-            font-weight: bold;
-            color: #4f4f4f;
-            text-transform: uppercase;
-        }
+        .card-badge { position: absolute; top: 8px; font-size: 9px; font-weight: bold; color: #4f4f4f; text-transform: uppercase; }
         .game-card.active .card-badge { color: #ff9500; }
 
         .card-text {
             font-size: 13px;
             font-weight: 800;
-            color: rgba(255,255,255,0.15); /* Gedimd vooraf */
+            color: rgba(255,255,255,0.15);
             line-height: 1.3;
             word-break: break-word;
         }
         .game-card.active .card-text { color: #ffffff; }
 
-        /* Uitgeklapte full reveal details */
         .reveal-details {
             display: none;
             font-size: 10px;
@@ -127,7 +106,7 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             width: 100%;
         }
 
-        /* Resultaat states */
+        /* Resultaat Status */
         .card-correct { 
             background: linear-gradient(135deg, #122c16 0%, #0b1a0d 100%) !important; 
             border-color: #00ffcc !important; 
@@ -142,7 +121,7 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             opacity: 0.5;
         }
 
-        /* Centrale knop & VU Meter */
+        /* Knoppen & Timers */
         .play-box { margin: 15px 0; }
         
         .btn-audio { 
@@ -161,11 +140,10 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
         }
         .btn-audio:active { transform: scale(0.97); }
 
-        /* De visuele aftelbalk */
         .timer-container { width: 100%; background-color: #222; height: 6px; border-radius: 3px; margin-top: 15px; overflow: hidden; display: none; }
         .timer-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #ff9500, #ff2d55); transition: width 0.1s linear; }
 
-        /* Mobiele VU-Meter Equalizer */
+        /* VU-Meter */
         .vu-meter {
             display: flex;
             justify-content: center;
@@ -182,13 +160,7 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             transition: height 0.1s ease;
         }
 
-        .footer {
-            font-size: 11px;
-            color: #4f4f4f;
-            text-align: center;
-            letter-spacing: 1px;
-            margin-top: 10px;
-        }
+        .footer { font-size: 11px; color: #4f4f4f; text-align: center; letter-spacing: 1px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -197,13 +169,12 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
         
         <div>
             <h1 class="logo">HitJam <span>3</span></h1>
-            <div class="user-welcome">Sessie: <strong><?php echo $_SESSION['username']; ?></strong></div>
-            <div class="role-badge"><?php echo $is_host ? "👑 SPELLEIDER (HOST)" : "🎮 SPELER"; ?></div>
+            <div class="user-welcome">Speler: <strong><?php echo $_SESSION['username']; ?></strong></div>
             <div class="score-board">🏆 SCORE: <span id="score-val">0</span></div>
-            <div style="font-size: 13px; color: #ff9500; font-weight: bold; text-transform: uppercase;" id="instruction-text">Wachten op de host...</div>
+            <div style="font-size: 13px; color: #ff9500; font-weight: bold; text-transform: uppercase;" id="instruction-text">Klik op START PLAY om te beginnen!</div>
         </div>
 
-        <!-- De 2x2 Telefoon Grid -->
+        <!-- 2x2 Grid -->
         <div class="cards-grid">
             <div class="game-card" id="card-0" onclick="kiesKaart(0)">
                 <div class="card-badge">Card A</div>
@@ -228,12 +199,8 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
         </div>
 
         <div class="play-box">
-            <!-- Toon de startknop ALLEEN als de gebruiker de Host/Admin is! -->
-            <?php if ($is_host): ?>
-                <button class="btn-audio" id="btn-start">⚡ START VOLGENDE RONDE</button>
-            <?php else: ?>
-                <div style="color: #4f4f4f; font-size: 13px; font-weight: bold; text-transform: uppercase;">Luister live mee via de boxen...</div>
-            <?php endif; ?>
+            <!-- IEDEREEN krijgt nu de startknop, onafhankelijk van admin-rechten! -->
+            <button class="btn-audio" id="btn-start">⚡ START PLAY</button>
             
             <div class="timer-container" id="timer-box">
                 <div class="timer-bar" id="timer-bar"></div>
@@ -246,13 +213,10 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
             </div>
         </div>
 
-        <div class="footer">HITJAM 3 PREMIUM POLLED MODE</div>
+        <div class="footer">HITJAM 3 ARCADE DECENTRALIZED</div>
 
     </div>
     <script>
-        // Haal de rol van de speler binnen vanuit PHP naar JavaScript
-        const isHost = <?php echo $is_host ? 'true' : 'false'; ?>;
-        
         let audioPlayer = null;
         let rondeGegevens = null;
         let indexJuisteAntwoord = null;
@@ -261,78 +225,54 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
         let timerInterval = null;
         let huidigeScore = 0;
         let gameActief = false;
-        let lokaalSongId = 0; // Houdt bij welke song nu op dit scherm actief is
 
-        // Als de gebruiker de Host is, mag hij de fysieke startknop bedienen
-        if (isHost) {
-            document.getElementById('btn-start').addEventListener('click', activeerNieuweRondeViaPi);
-        }
+        document.getElementById('btn-start').addEventListener('click', startStandaloneRonde);
 
-        // 1. HOST ACTIE: Vertel de Pi om een nieuw nummer te kiezen
-        function activeerNieuweRondeViaPi() {
-            document.getElementById('btn-start').innerText = "⏳ SCANNING...";
+        function startStandaloneRonde() {
+            // Stop en wis direct alle actieve timers en audio van de vorige ronde
+            if (audioPlayer) { audioPlayer.pause(); }
+            stopVuMeter();
+            resetKaarten();
             
+            clearTimeout(timerTimeout);
+            clearInterval(timerInterval);
+            
+            document.getElementById('btn-start').innerText = "⏳ SCANNING...";
+            document.getElementById('instruction-text').innerText = "Inladen...";
+
+            // Directe fetch naar de backend om een willekeurig nummer te plukken
             fetch('hj3_get_next_song.php')
                 .then(res => res.json())
                 .then(data => {
+                    document.getElementById('btn-start').innerText = "⚡ NEXT ROUND";
+                    
                     if (data.status === 'success') {
-                        console.log("Nieuw nummer succesvol klaargezet in de Pi database!");
+                        rondeGegevens = data;
+                        gameActief = true;
+
+                        // Start de audio direct! Omdat dit gebeurt na een fysieke knop-klik,
+                        // accepteert elke mobiele browser (iOS/Android) dit direct zonder hapering.
+                        audioPlayer = new Audio(data.preview_url);
+                        audioPlayer.play().catch(e => {
+                            console.error("Audio kon niet starten:", e);
+                            document.getElementById('instruction-text').innerText = "❌ AUDIO FOUT! PROBEER OPNIEUW.";
+                        });
+
+                        // Start de visuele pracht en praal
+                        startVuMeter();
+                        bouwGemixtKaarten();
+                        startArcadeTimer();
                     } else {
-                        alert("Fout bij laden: " + data.message);
-                        document.getElementById('btn-start').innerText = "⚡ START VOLGENDE RONDE";
+                        document.getElementById('instruction-text').innerText = "Fout bij ophalen.";
                     }
+                })
+                .catch(err => {
+                    console.error("Netwerkfout:", err);
+                    document.getElementById('instruction-text').innerText = "Pi onbereikbaar.";
+                    document.getElementById('btn-start').innerText = "⚡ START PLAY";
                 });
         }
 
-        // 2. DE AUTOMATISCHE MULTIPLAYER SYNC: Vraag elke seconde (1000 ms) geruisloos aan de Pi wat de status is
-        setInterval(controleerSpelStatusMetPi, 1000);
-
-        function controleerSpelStatusMetPi() {
-            fetch('hj3_check_sync.php')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // Als het nummer op de Pi anders is dan wat deze telefoon nu draait, start de ronde!
-                        if (data.current_song_id !== lokaalSongId && data.current_song_id > 0) {
-                            
-                            console.log("🚀 Nieuw nummer ontdekt op de Pi! ID: " + data.current_song_id);
-                            lokaalSongId = data.current_song_id; // Sla het nieuwe ID op
-                            
-                            // Reset direct de schermen van ALLE spelers tegelijk
-                            if (audioPlayer) { audioPlayer.pause(); }
-                            stopVuMeter();
-                            resetKaarten();
-
-                            // Haal direct de audio link en details op
-                            fetch('hj3_get_next_song.php')
-                                .then(res => res.json())
-                                .then(songData => {
-                                    if (songData.status === 'success') {
-                                        rondeGegevens = songData;
-                                        gameActief = true;
-
-                                        if (isHost) {
-                                            document.getElementById('btn-start').innerText = "⚡ RONDE IS ACTIEF";
-                                        }
-                                        
-                                        // Start de audio op ieders telefoon!
-                                        audioPlayer = new Audio(songData.preview_url);
-                                        audioPlayer.play().catch(e => {
-                                            console.log("Autoplay geblokkeerd door browser.");
-                                        });
-
-                                        // Start de animaties, timers en de gemixte kaarten!
-                                        startVuMeter();
-                                        bouwGemixtKaarten();
-                                        startMultiplayerTimer();
-                                    }
-                                });
-                        }
-                    }
-                });
-        }
-
-        // 3. GAMEPLAY LOGICA (De unieke Gemixt-kaarten modus)
         function bouwGemixtKaarten() {
             document.getElementById('instruction-text').innerText = "💥 VIND DE JUISTE MATCH!";
 
@@ -364,11 +304,12 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
                 }
             }
         }
+
         function kiesKaart(gekozenIndex) {
             if (!gameActief || indexJuisteAntwoord === null) return;
             gameActief = false;
 
-            // Stop de timer direct bij een klik, maar laat de muziek heerlijk doordraaien!
+            // Stop de timer direct bij een klik, maar laat de muziek lekker doorspelen
             clearTimeout(timerTimeout);
             clearInterval(timerInterval);
 
@@ -395,14 +336,9 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
                 juisteKaart.classList.add('card-correct');
                 document.getElementById('instruction-text').innerText = "❌ FOUTE KAART!";
             }
-
-            if (isHost) {
-                document.getElementById('btn-start').innerText = "⚡ START VOLGENDE RONDE";
-            }
         }
 
-        // 4. ANIMATIES & TIMERS
-        function startMultiplayerTimer() {
+        function startArcadeTimer() {
             const timerBox = document.getElementById('timer-box');
             const timerBar = document.getElementById('timer-bar');
             
@@ -422,7 +358,7 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
                 clearInterval(timerInterval);
                 gameActief = false;
                 
-                if (audioPlayer) { audioPlayer.pause(); } // Muziek valt pas na 30 sec stil
+                if (audioPlayer) { audioPlayer.pause(); } // Muziek stopt na 30 seconden
                 stopVuMeter();
                 
                 document.getElementById('instruction-text').innerText = "⏰ DE TIJD IS OM!";
@@ -434,10 +370,6 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
                     revealDiv.innerHTML = `<strong>${rondeGegevens.artist}</strong><br>${rondeGegevens.title}<br>📅 ${rondeGegevens.year}`;
                 }
                 document.getElementById(`card-${indexJuisteAntwoord}`).classList.add('card-correct');
-                
-                if (isHost) {
-                    document.getElementById('btn-start').innerText = "⚡ START VOLGENDE RONDE";
-                }
             }, totaleDuur);
         }
 
