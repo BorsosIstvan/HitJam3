@@ -4,7 +4,7 @@ require_once('hj3_db.php');
 if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
 
 // Bepaal de rol van de ingelogde gebruiker
-$is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : false;
+$is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : true;
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -252,7 +252,6 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
     <script>
         // Haal de rol van de speler binnen vanuit PHP naar JavaScript
         const isHost = <?php echo $is_host ? 'true' : 'false'; ?>;
-        let isHost = true;
         
         let audioPlayer = null;
         let rondeGegevens = null;
