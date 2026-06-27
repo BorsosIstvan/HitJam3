@@ -1,5 +1,6 @@
 <?php
 require_once('hj3_db.php');
+session_write_close();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
