@@ -124,46 +124,58 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
                 });
         }
 
-        // 2. DE LIVE ENTVANGER: Luister continu 100% offline naar de live stream van de Pi!
-        const liveStream = new EventSource('hj3_live_stream.php');
+        // Houd bij welk nummer er nu op de telefoon van deze speler draait
+        let lokaalSongId = 0; 
 
-        liveStream.onmessage = function(event) {
-            const liveData = JSON.parse(event.data);
-            
-            if (liveData.action === 'new_song') {
-                console.log("💥 Live Pi Signaal ontvangen! Nieuw nummer ID: " + liveData.song_id);
-                
-                // Synchroniseer en reset de schermen van ALLE spelers tegelijk!
-                if (audioPlayer) { audioPlayer.pause(); }
-                stopVuMeter();
-                resetKaarten();
+        // Start een timer die ELKE SECONDE (1000 ms) geruisloos aan de Pi vraagt wat de status is
+        setInterval(controleerSpelStatusMetPi, 1000);
 
-                // Haal de metadata (titel/artiest/jaar) van dit nummer asynchroon op bij de Pi
-                // Dit voorkomt dat spelers de antwoorden uit de live stream stream kunnen 'plukken'.
-                fetch('hj3_get_next_song.php') // We gebruiken de actieve cache status van het script
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            rondeGegevens = data;
-                            gameActief = true;
-
-                            if (isHost) {
-                                document.getElementById('btn-start').innerText = "⚡ RONDE IS ACTIEF";
-                            }
+        function controleerSpelStatusMetPi() {
+            fetch('hj3_check_sync.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Is het nummer op de Pi anders dan wat deze telefoon nu laat zien?
+                        // Dan betekent het dat de Host een nieuwe ronde is gestart!
+                        if (data.current_song_id !== lokaalSongId && data.current_song_id > 0) {
                             
-                            // Start de audio stream (Apple Preview) op ieders telefoon!
-                            audioPlayer = new Audio(data.preview_url);
-                            audioPlayer.play().catch(e => {
-                                console.log("Browser blokkeert autoplay. Klik op het scherm.");
-                            });
+                            console.log("🚀 Nieuw nummer ontdekt op de Pi! ID: " + data.current_song_id);
+                            lokaalSongId = data.current_song_id; // Update onze lokale status
+                            
+                            // Reset het scherm en stop oude muziek
+                            if (audioPlayer) { audioPlayer.pause(); }
+                            stopVuMeter();
+                            resetKaarten();
 
-                            startVuMeter();
-                            bouwGemixtKaarten();
-                            startMultiplayerTimer();
+                            // Haal direct de speeldata op (preview_url, jaar, artiest, titel)
+                            fetch('hj3_get_next_song.php')
+                                .then(res => res.json())
+                                .then(songData => {
+                                    if (songData.status === 'success') {
+                                        rondeGegevens = songData;
+                                        gameActief = true;
+
+                                        if (isHost) {
+                                            document.getElementById('btn-start').innerText = "⚡ RONDE IS ACTIEF";
+                                        }
+                                        
+                                        // Speel de muziek af op de telefoon van de speler
+                                        audioPlayer = new Audio(songData.preview_url);
+                                        audioPlayer.play().catch(e => {
+                                            console.log("Autoplay geblokkeert door browser. Klik op het scherm.");
+                                        });
+
+                                        // Start de animaties, timers en kaartenmix!
+                                        startVuMeter();
+                                        bouwGemixtKaarten();
+                                        startMultiplayerTimer();
+                                    }
+                                });
                         }
-                    });
-            }
-        };
+                    }
+                });
+        }
+
 
         // 3. GAMEPLAY LOGICA (Zelfde stabiele werking als voorheen)
         function bouwGemixtKaarten() {
