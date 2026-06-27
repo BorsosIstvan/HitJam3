@@ -310,8 +310,8 @@
             if (!gameActief || indexJuisteAntwoord === null) return;
             gameActief = false; // Voorkom dubbelklikken op mobiel
 
-            if (audioPlayer) { audioPlayer.pause(); }
-            stopVuMeter();
+            //if (audioPlayer) { audioPlayer.pause(); }
+            //stopVuMeter();
 
             // De Grote Onthulling op álle kaarten!
             for (let i = 0; i < 4; i++) {
