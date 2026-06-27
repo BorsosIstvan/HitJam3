@@ -170,6 +170,10 @@ if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
         <div>
             <h1 class="logo">HitJam <span>3</span></h1>
             <div class="user-welcome">Speler: <strong><?php echo $_SESSION['username']; ?></strong></div>
+            <!-- Hier komen de online spelers live in te staan -->
+            <div style="font-size: 12px; color: #00ffcc; margin-top: 4px; font-weight: bold;" id="online-players-box">
+                Online: <span id="online-list">...</span>
+            </div>
             <div class="score-board">🏆 SCORE: <span id="score-val">0</span></div>
             <div style="font-size: 13px; color: #ff9500; font-weight: bold; text-transform: uppercase;" id="instruction-text">Klik op START PLAY om te beginnen!</div>
         </div>
@@ -398,6 +402,31 @@ if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
             clearInterval(vuInterval);
             document.querySelectorAll('.vu-bar').forEach(bar => { bar.style.height = '3px'; });
         }
+        // Start de hartslag-motor: stuur elke 4 seconden een signaal naar de Pi
+        setInterval(stuurHartslagEnHaalOnlineOp, 4000);
+        stuurHartslagEnHaalOnlineOp(); // Direct één keer uitvoeren bij het opstarten
+
+        function stuurHartslagEnHaalOnlineOp() {
+            fetch('hj3_heartbeat.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const listSpan = document.getElementById('online-list');
+                        
+                        // Haal jezelf uit de lijst van 'andere' online spelers voor een schoner overzicht
+                        let andereSpelers = data.online.filter(naam => naam !== data.me);
+                        
+                        if (andereSpelers.length > 0) {
+                            // Maak er een mooie komma-gescheiden lijst van (bijv: "Istvan, Jan, Piet")
+                            listSpan.innerText = andereSpelers.join(', ');
+                        } else {
+                            listSpan.innerText = "Alleen jij (wachten op vrienden...)";
+                        }
+                    }
+                })
+                .catch(err => console.error("Hartslag fout:", err));
+        }
+
     </script>
 </body>
 </html>
