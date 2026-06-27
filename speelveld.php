@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HitJam 3 - Speelveld</title>
     <style>
-        /* CSS Direct in het bestand: werkt altijd, onafhankelijk van internet! */
+        /* CSS Direct in het bestand: werkt altijd super snel op je Pi! */
         body {
             background-color: #0b0c10;
             color: #ffffff;
@@ -14,7 +14,6 @@
             padding: 0;
             min-height: 100vh;
             display: flex;
-            flex-col: column;
             flex-direction: column;
             justify-content: space-between;
         }
@@ -23,10 +22,9 @@
         header {
             background-color: rgba(31, 40, 51, 0.6);
             padding: 15px 20px;
-            border-b: 1px solid rgba(69, 243, 255, 0.2);
+            border-bottom: 1px solid rgba(69, 243, 255, 0.2);
             display: flex;
             justify-content: space-between;
-            items-center: center;
             align-items: center;
         }
         header h1 {
@@ -129,7 +127,6 @@
 
         /* De Song Kaarten in de tijdlijn */
         .song-card {
-            min-w: 110px;
             min-width: 110px;
             max-width: 110px;
             height: 110px;
@@ -170,6 +167,9 @@
             border-style: solid;
             transform: scale(1.1);
         }
+        
+        /* CSS Animatie voor de vinyl disc */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -193,15 +193,14 @@
     <footer>
         <h3>Jouw Tijdlijn</h3>
         <div class="timeline-container" id="timeline-container">
-            <!-- Wordt gevuld door JavaScript -->
+            <!-- Wordt gevuld door JavaScript uit deel 2 -->
         </div>
     </footer>
-
     <script>
         let audioPlayer = null;
         let huidigSongId = null;
 
-        // Om het spel te starten geven we de speler alvast 1 start-kaart cadeau (Tijdlijn basis)
+        // Startpunt van de speler: alvast 1 kaart cadeau om mee te beginnen
         let spelerTijdlijn = [
             { id: 9999, artist: "Basis Jaar", title: "Startpunt", year: 2000 }
         ];
@@ -209,7 +208,6 @@
         document.getElementById('btn-play').addEventListener('click', startNieuwNummer);
 
         function startNieuwNummer() {
-            echo('play');
             if (audioPlayer) { audioPlayer.pause(); }
             document.getElementById('feedback').style.display = 'none';
             document.getElementById('btn-play').innerText = "⏳ Laden...";
@@ -225,7 +223,7 @@
                         audioPlayer = new Audio(data.preview_url);
                         audioPlayer.play();
                         
-                        // Laat de vinyl-disc visueel spinnen ter indicatie
+                        // Laat de vinyl-disc visueel spinnen
                         document.getElementById('vinyl').style.animation = "spin 2s linear infinite";
                     }
                 });
@@ -235,14 +233,14 @@
             const container = document.getElementById('timeline-container');
             container.innerHTML = '';
 
-            // Sorteer de tijdlijn ALTIJD eerst chronologisch op jaartal voordat we hem tekenen!
+            // Sorteer de kaarten altijd netjes chronologisch
             spelerTijdlijn.sort((a, b) => a.year - b.year);
 
-            // Eerste plusknop (voor nummers ouder dan alles)
+            // Eerste plusknop aan de linkerkant
             container.appendChild(maakPlusKnop(0, spelerTijdlijn[0].id));
 
             spelerTijdlijn.forEach((card, index) => {
-                // Voeg songkaart toe
+                // Maak de songkaart aan
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'song-card';
                 cardDiv.innerHTML = `
@@ -252,7 +250,7 @@
                 `;
                 container.appendChild(cardDiv);
 
-                // Plusknop tussen kaarten of aan het einde
+                // Plusknop tussen de kaarten of helemaal aan het einde
                 const volgende = spelerTijdlijn[index + 1];
                 if (volgende) {
                     container.appendChild(maakPlusKnop(card.id, volgende.id));
@@ -274,7 +272,7 @@
             if (!huidigSongId) { alert("Start eerst een nummer!"); return; }
 
             let formData = new FormData();
-            formData.append('player_id', 1); // Testen met speler 1
+            formData.append('player_id', 1); // Testen als speler 1
             formData.append('current_song_id', huidigSongId);
             formData.append('song_before_id', beforeId);
             formData.append('song_after_id', afterId);
@@ -282,3 +280,36 @@
             fetch('hj3_check_answer.php', { method: 'POST', body: formData })
                 .then(res => res.json())
                 .then(data => {
+                    const fb = document.getElementById('feedback');
+                    fb.style.display = 'block';
+                    
+                    if (audioPlayer) { audioPlayer.pause(); }
+                    document.getElementById('vinyl').style.animation = "none";
+
+                    if (data.result === 'correct') {
+                        fb.className = "feedback correct";
+                        fb.innerHTML = `🎉 GOED! Het jaar was ${data.year}.`;
+                        
+                        // Voeg het zojuist geraden nummer toe aan de lokale tijdlijn
+                        spelerTijdlijn.push({
+                            id: huidigSongId,
+                            artist: "Geraden",
+                            title: "Liedje",
+                            year: data.year
+                        });
+                        
+                        huidigSongId = null; // Reset ronde
+                        tekenTijdlijn();    // Teken de tijdlijn direct opnieuw!
+                    } else {
+                        fb.className = "feedback wrong";
+                        fb.innerHTML = `😢 FOUT! Het jaar was ${data.year}.`;
+                        huidigSongId = null;
+                    }
+                });
+        }
+
+        // Teken de start-tijdlijn direct in beeld
+        tekenTijdlijn();
+    </script>
+</body>
+</html>
