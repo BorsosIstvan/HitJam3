@@ -191,6 +191,7 @@ if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
         
         <div>
             <h1 class="logo">HitJam <span>3</span></h1>
+            <span>👤 <?php echo $_SESSION['username']; ?></span>
             <div class="score-board">🏆 SCORE: <span id="score-val">0</span></div>
             <div style="font-size: 13px; color: #ff9500; font-weight: bold; text-transform: uppercase;" id="instruction-text">Klik op start play</div>
         </div>
