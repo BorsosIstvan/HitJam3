@@ -25,7 +25,7 @@ try {
     $preview_url = $song['preview_url'];
 
     // 2. Als er nog geen preview_url gecachet is, halen we hem nu éénmalig op bij Apple
-    if (empty($preview_url)) {
+    if (empty($preview_url) or $preview_url=='NOT_FOUND') {
         // Maak de zoekterm schoon voor de URL
         $schone_artiest = str_replace('&', ' ', $song['artist']);
         $zoekterm = urlencode($schone_artiest . " " . $song['title']);
