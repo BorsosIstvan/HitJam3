@@ -334,8 +334,8 @@
                 document.getElementById('instruction-text').innerText = "🔥 BINGO! +10 PUNTEN";
                 
                 // Speel applaus luid af
-                document.getElementById('sound-applause').currentTime = 0;
-                document.getElementById('sound-applause').play();
+                //document.getElementById('sound-applause').currentTime = 0;
+                //document.getElementById('sound-applause').play();
             } else {
                 // VERLIEZER! 😢
                 gekozenKaart.classList.add('card-wrong');
@@ -343,8 +343,8 @@
                 document.getElementById('instruction-text').innerText = "❌ FOUTE KAART!";
                 
                 // Speel fout-sound luid af
-                document.getElementById('sound-wrong').currentTime = 0;
-                document.getElementById('sound-wrong').play();
+                //document.getElementById('sound-wrong').currentTime = 0;
+                //document.getElementById('sound-wrong').play();
             }
         }
 
