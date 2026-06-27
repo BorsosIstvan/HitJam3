@@ -2,283 +2,368 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HitJam 3 - Premium Arcade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>HitJam 3 - Arcade Battle</title>
     <style>
-        /* Professioneel donker design met rood en neon-oranje accenten */
-        body {
-            background-color: #050508;
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
+        /* Exact dezelfde solide mobiele basis als HJ2, maar met de premium rode/oranje arcade look */
+        body { 
+            font-family: 'Segoe UI', -apple-system, sans-serif; 
+            margin: 0; 
+            background-color: #0b0c10; 
+            color: #ffffff; 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh; 
+        }
+        
+        .app-container { 
+            width: 100%; 
+            max-width: 450px; 
+            background: linear-gradient(180deg, #160c13 0%, #0b0c10 100%); 
+            padding: 20px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            box-shadow: 0 0 35px rgba(0,0,0,0.8); 
+            text-align: center; 
+        }
+
+        .logo { 
+            font-size: 32px; 
+            font-weight: 900; 
+            background: linear-gradient(45deg, #ff2d55, #ff9500); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            text-transform: uppercase; 
+            margin: 0 0 5px 0; 
+            letter-spacing: 1px;
+        }
+
+        .score-board {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ff9500;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* 2x2 Grid geoptimaliseerd voor het telefoonscherm */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        /* De Speelkaarten met subtiele fotolook-achtergrond */
+        .game-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 130px;
+            border-radius: 18px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            overflow-x: hidden;
-        }
-
-        /* Premium Header */
-        header {
-            background: linear-gradient(180deg, #100b0b 0%, #050508 100%);
-            padding: 18px 20px;
-            border-bottom: 2px solid #ff3333;
-            box-shadow: 0 4px 20px rgba(255, 51, 51, 0.15);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: #ff3333;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.6);
-        }
-        header h1 span { color: #ff6600; text-shadow: 0 0 10px rgba(255, 102, 0, 0.6); }
-
-        /* Centrale Game Container */
-        main {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            gap: 25px;
-        }
-
-        /* De platen- en animatiekaart */
-        .arcade-card {
-            background: #0d0d13;
-            border: 2px solid #1a1a26;
-            padding: 30px;
-            border-radius: 28px;
-            width: 100%;
-            max-width: 340px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,102,0,0.05);
+            padding: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
             position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
         }
 
-        /* Gloeiende Vinyl Schijf met Retro Groeven */
-        .vinyl-container {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            margin: 10px auto 25px auto;
+        /* Actieve kaarten lichten prachtig rood/oranje op */
+        .game-card.active {
+            border-color: #ff2d55;
+            box-shadow: 0 4px 15px rgba(255, 45, 85, 0.2);
         }
-        .music-vinyl {
+        .game-card.active:active {
+            transform: scale(0.95);
+            background: rgba(255, 45, 85, 0.1);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 8px;
+            font-size: 9px;
+            font-weight: bold;
+            color: #4f4f4f;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .game-card.active .card-badge { color: #ff9500; }
+
+        .card-text {
+            font-size: 13px;
+            font-weight: 800;
+            color: rgba(255,255,255,0.15); /* Gedimd vooraf */
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        .game-card.active .card-text { color: #ffffff; }
+
+        /* Uitgeklapte full reveal details */
+        .reveal-details {
+            display: none;
+            font-size: 10px;
+            margin-top: 5px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 4px;
+            color: #b3b3b3;
             width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, #ff6600 0%, #111 10%, #000 11%, #151515 30%, #000 31%, #1c1c1c 50%, #000 70%, #ff3333 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 25px rgba(255, 51, 51, 0.3), inset 0 0 10px #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-        }
-        /* Het middengat van de single */
-        .vinyl-center {
-            width: 35px;
-            height: 35px;
-            background-color: #0d0d13;
-            border: 3px solid #ff6600;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        /* Geanimeerde VU-Meter (Equalizer) */
+        /* Resultaat states */
+        .card-correct { 
+            background: linear-gradient(135deg, #122c16 0%, #0b1a0d 100%) !important; 
+            border-color: #00ffcc !important; 
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4) !important;
+        }
+        .card-correct .card-text { color: #00ffcc !important; }
+        
+        .card-wrong { 
+            background: linear-gradient(135deg, #2c1212 0%, #1a0b0b 100%) !important; 
+            border-color: #ff2d55 !important; 
+            box-shadow: 0 0 15px rgba(255, 45, 85, 0.3) !important;
+            opacity: 0.5;
+        }
+
+        /* Centrale knop & VU Meter */
+        .play-box { margin: 15px 0; }
+        
+        .btn-audio { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border: none; 
+            cursor: pointer; 
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ff2d55, #ff9500); 
+            color: white; 
+            box-shadow: 0 6px 20px rgba(255, 45, 85, 0.35); 
+            transition: all 0.2s; 
+        }
+        .btn-audio:active { transform: scale(0.97); }
+
+        /* Mobiele VU-Meter Equalizer */
         .vu-meter {
             display: flex;
             justify-content: center;
             align-items: flex-end;
             gap: 4px;
-            height: 45px;
-            margin: 15px 0;
-            padding: 0 10px;
+            height: 24px;
+            margin-top: 15px;
         }
         .vu-bar {
-            width: 8px;
-            height: 5px; /* Start laag */
-            background: linear-gradient(0deg, #ff6600 0%, #ff3333 80%, #ff0000 100%);
-            border-radius: 3px;
+            width: 6px;
+            height: 3px;
+            background: linear-gradient(0deg, #ff9500 0%, #ff2d55 100%);
+            border-radius: 2px;
             transition: height 0.1s ease;
         }
 
-        /* Grote Actieknop */
-        .btn-arcade {
-            background: linear-gradient(135deg, #ff3333 0%, #ff6600 100%);
-            color: #ffffff;
-            border: none;
-            padding: 14px 32px;
-            font-size: 16px;
-            font-weight: 800;
-            text-transform: uppercase;
+        .footer {
+            font-size: 11px;
+            color: #4f4f4f;
+            text-align: center;
             letter-spacing: 1px;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.4);
-            transition: all 0.2s ease;
-        }
-        .btn-arcade:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(255, 102, 0, 0.6);
-        }
-
-        /* Jaartal Kiezer (HitJam2-stijl) */
-        .year-selector-section {
-            width: 100%;
-            max-width: 340px;
-            background: #0d0d13;
-            border: 2px solid #1a1a26;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            display: none; /* Komt pas in beeld als muziek speelt */
-        }
-        .year-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .year-btn {
-            background-color: #161622;
-            border: 1px solid #2d2d3f;
-            color: #fff;
-            padding: 10px 0;
-            font-weight: bold;
-            font-size: 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .year-btn:hover {
-            background-color: #ff6600;
-            border-color: #ff6600;
-            color: #000;
-        }
-
-        /* Feedback Popups */
-        .alert-box {
-            padding: 12px;
-            border-radius: 14px;
-            font-weight: bold;
-            margin-top: 15px;
-            display: none;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-        .alert-success { background-color: rgba(46, 125, 50, 0.2); border: 2px solid #2e7d32; color: #4caf50; text-shadow: 0 0 5px #2e7d32; }
-        .alert-error { background-color: rgba(198, 40, 40, 0.2); border: 2px solid #c62828; color: #ef5350; text-shadow: 0 0 5px #c62828; }
-
-        /* Draai-animatie voor vinyl */
-        @keyframes spin-vinyl {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>HITJAM <span>3</span></h1>
-        <div style="color: #ff6600; font-weight: bold;">⚡ ARCADE MODE</div>
-    </header>
+    <!-- Native Google Audio FX bibliotheek -->
+    <audio id="sound-applause" src="https://google.com" preload="auto"></audio>
+    <audio id="sound-wrong" src="https://google.com" preload="auto"></audio>
 
-    <main>
-        <!-- De Muziek / Animatie Kaart -->
-        <div class="arcade-card">
-            <div class="vinyl-container">
-                <div class="music-vinyl" id="vinyl-disc">
-                    <div class="vinyl-center">💿</div>
-                </div>
-            </div>
+    <div class="app-container">
+        
+        <div>
+            <h1 class="logo">HitJam <span>3</span></h1>
+            <div class="score-board">🏆 SCORE: <span id="score-val">0</span></div>
+            <div style="font-size: 13px; color: #ff9500; font-weight: bold; text-transform: uppercase;" id="instruction-text">Klik op start play</div>
+        </div>
 
-            <!-- De fysieke VU-meter met 9 bewegende balkjes -->
-            <div class="vu-meter" id="vu-meter">
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
-                <div class="vu-bar"></div>
+        <!-- De 2x2 Telefoon Grid -->
+        <div class="cards-grid">
+            <div class="game-card" id="card-0" onclick="kiesKaart(0)">
+                <div class="card-badge">Card A</div>
+                <div class="card-text">?</div>
+                <div class="reveal-details" id="reveal-0"></div>
             </div>
+            <div class="game-card" id="card-1" onclick="kiesKaart(1)">
+                <div class="card-badge">Card B</div>
+                <div class="card-text">?</div>
+                <div class="reveal-details" id="reveal-1"></div>
+            </div>
+            <div class="game-card" id="card-2" onclick="kiesKaart(2)">
+                <div class="card-badge">Card C</div>
+                <div class="card-text">?</div>
+                <div class="reveal-details" id="reveal-2"></div>
+            </div>
+            <div class="game-card" id="card-3" onclick="kiesKaart(3)">
+                <div class="card-badge">Card D</div>
+                <div class="card-text">?</div>
+                <div class="reveal-details" id="reveal-3"></div>
+            </div>
+        </div>
+
+        <div class="play-box">
+            <button class="btn-audio" id="btn-start">⚡ START PLAY</button>
             
-            <button class="btn-arcade" id="btn-play">▶️ Start Muziek</button>
-            <div id="game-feedback" class="alert-box"></div>
-        </div>
-
-        <!-- Jaartal Kiezer (HitJam2 Stijl) -->
-        <div class="year-selector-section" id="year-section">
-            <span style="font-size: 12px; text-transform: uppercase; color: #888; font-weight: bold; tracking-letter: 1px;">Kies het juiste jaartal:</span>
-            <div class="year-grid" id="year-grid">
-                <!-- Wordt dynamisch gegenereerd in deel 2 -->
+            <div class="vu-meter">
+                <div class="vu-bar"></div><div class="vu-bar"></div><div class="vu-bar"></div>
+                <div class="vu-bar"></div><div class="vu-bar"></div><div class="vu-bar"></div>
+                <div class="vu-bar"></div><div class="vu-bar"></div><div class="vu-bar"></div>
             </div>
         </div>
-    </main>
+
+        <div class="footer">HITJAM 3 PREMIUM MOBILE</div>
+
+    </div>
     <script>
         let audioPlayer = null;
-        let huidigSongId = null;
-        let echtJaar = null;
+        let rondeGegevens = null;
+        let indexJuisteAntwoord = null;
         let vuInterval = null;
+        let huidigeScore = 0;
+        let gameActief = false;
 
-        document.getElementById('btn-play').addEventListener('click', startNieuwNummer);
+        document.getElementById('btn-start').addEventListener('click', startNieuwNummer);
 
         function startNieuwNummer() {
-            // Reset oude status
             if (audioPlayer) { audioPlayer.pause(); }
             stopVuMeter();
-            document.getElementById('game-feedback').style.display = 'none';
-            document.getElementById('year-section').style.display = 'none';
-            document.getElementById('vinyl-disc').style.animation = "none";
-            document.getElementById('btn-play').innerText = "⏳ Laden...";
+            resetKaarten();
+            
+            document.getElementById('btn-start').innerText = "⏳ SCANNING...";
+            document.getElementById('instruction-text').innerText = "Inladen...";
 
-            // Haal willekeurig nummer op uit je Raspberry Pi backend
             fetch('hj3_get_next_song.php')
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById('btn-play').innerText = "▶️ Volgend Nummer";
+                    document.getElementById('btn-start').innerText = "⚡ START PLAY";
                     
                     if (data.status === 'success') {
-                        huidigSongId = data.id;
-                        echtJaar = parseInt(data.year);
+                        rondeGegevens = data;
+                        gameActief = true;
                         
-                        // Start Apple audio stream direct via de browser
+                        // Start Apple audio stream direct
                         audioPlayer = new Audio(data.preview_url);
                         audioPlayer.play();
-                        
-                        // Activeer de animaties!
-                        document.getElementById('vinyl-disc').style.animation = "spin-vinyl 3s linear infinite";
                         startVuMeter();
                         
-                        // Genereer de HitJam keuzeknoppen (HitJam2-stijl)
-                        genereerJaarKnoppen(echtJaar);
+                        // Start de gemixte kaarten-opbouw
+                        bouwGemixtKaarten();
                     } else {
-                        alert("Fout bij ophalen nummer: " + data.message);
+                        document.getElementById('instruction-text').innerText = "Fout bij laden.";
                     }
                 });
         }
 
-        // De VU-Meter Animatie logica
+        function bouwGemixtKaarten() {
+            document.getElementById('instruction-text').innerText = "💥 VIND DE JUISTE MATCH!";
+
+            // Kies welke eigenschap de winnende kaart laat zien (0 = Jaar, 1 = Artiest, 2 = Titel)
+            const winnendType = Math.floor(Math.random() * 3);
+            let juisteWaarde = "";
+            if (winnendType === 0) juisteWaarde = rondeGegevens.year.toString();
+            else if (winnendType === 1) juisteWaarde = rondeGegevens.artist;
+            else juisteWaarde = rondeGegevens.title;
+
+            // Bepaal de winnende kaart (0 t/m 3)
+            indexJuisteAntwoord = Math.floor(Math.random() * 4);
+
+            // Vul alle kaarten met een unieke mix van informatie
+            for (let i = 0; i < 4; i++) {
+                const kaart = document.getElementById(`card-${i}`);
+                const tekstElement = kaart.querySelector('.card-text');
+                kaart.classList.add('active');
+
+                if (i === indexJuisteAntwoord) {
+                    tekstElement.innerText = juisteWaarde;
+                } else {
+                    // Genereer willekeurige foute mix-data voor de verliezende kaarten
+                    const randomType = Math.floor(Math.random() * 3);
+                    if (randomType === 0) {
+                        const afwijking = (Math.floor(Math.random() * 14) - 7);
+                        tekstElement.innerText = (parseInt(rondeGegevens.year) + (afwijking === 0 ? 3 : afwijking)).toString();
+                    } else if (randomType === 1) {
+                        const nepArtiesten = ["Linkin Park", "Dua Lipa", "Eminem", "Tiësto", "Rammstein", "Coldplay", "Rihanna"];
+                        tekstElement.innerText = nepArtiesten[Math.floor(Math.random() * nepArtiesten.length)];
+                    } else {
+                        const nepTitels = ["In The End", "Levitating", "Lose Yourself", "The Business", "Du Hast", "Yellow", "Umbrella"];
+                        tekstElement.innerText = nepTitels[Math.floor(Math.random() * nepTitels.length)];
+                    }
+                }
+            }
+        }
+
+        function kiesKaart(gekozenIndex) {
+            if (!gameActief || indexJuisteAntwoord === null) return;
+            gameActief = false; // Voorkom dubbelklikken op mobiel
+
+            if (audioPlayer) { audioPlayer.pause(); }
+            stopVuMeter();
+
+            // De Grote Onthulling op álle kaarten!
+            for (let i = 0; i < 4; i++) {
+                const kaart = document.getElementById(`card-${i}`);
+                kaart.classList.remove('active');
+                
+                const revealDiv = document.getElementById(`reveal-${i}`);
+                revealDiv.style.display = 'block';
+                revealDiv.innerHTML = `<strong>${rondeGegevens.artist}</strong><br>${rondeGegevens.title}<br>📅 ${rondeGegevens.year}`;
+            }
+
+            const gekozenKaart = document.getElementById(`card-${gekozenIndex}`);
+            const juisteKaart = document.getElementById(`card-${indexJuisteAntwoord}`);
+
+            if (gekozenIndex === indexJuisteAntwoord) {
+                // WINNAAR! 🎉
+                gekozenKaart.classList.add('card-correct');
+                huidigeScore += 10;
+                document.getElementById('score-val').innerText = huidigeScore;
+                document.getElementById('instruction-text').innerText = "🔥 BINGO! +10 PUNTEN";
+                
+                // Speel applaus luid af
+                document.getElementById('sound-applause').currentTime = 0;
+                document.getElementById('sound-applause').play();
+            } else {
+                // VERLIEZER! 😢
+                gekozenKaart.classList.add('card-wrong');
+                juisteKaart.classList.add('card-correct');
+                document.getElementById('instruction-text').innerText = "❌ FOUTE KAART!";
+                
+                // Speel fout-sound luid af
+                document.getElementById('sound-wrong').currentTime = 0;
+                document.getElementById('sound-wrong').play();
+            }
+        }
+
+        function resetKaarten() {
+            indexJuisteAntwoord = null;
+            for (let i = 0; i < 4; i++) {
+                const kaart = document.getElementById(`card-${i}`);
+                kaart.className = 'game-card';
+                kaart.querySelector('.card-text').innerText = '?';
+                document.getElementById(`reveal-${i}`).style.display = 'none';
+                document.getElementById(`reveal-${i}`).innerText = '';
+            }
+        }
+
         function startVuMeter() {
             const bars = document.querySelectorAll('.vu-bar');
-            
-            // Verander de hoogte van de balkjes elke 80 milliseconden voor een vloeiend ritme
             vuInterval = setInterval(() => {
                 bars.forEach(bar => {
-                    // Genereer een willekeurige hoogte tussen de 10px en 45px
-                    const randomHoogte = Math.floor(Math.random() * 35) + 10;
+                    const randomHoogte = Math.floor(Math.random() * 21) + 3;
                     bar.style.height = randomHoogte + 'px';
                 });
             }, 80);
@@ -287,59 +372,7 @@
         function stopVuMeter() {
             clearInterval(vuInterval);
             const bars = document.querySelectorAll('.vu-bar');
-            bars.forEach(bar => { bar.style.height = '5px'; }); // Reset naar laagste stand
-        }
-
-        // Genereert 4 knoppen: 1 juiste en 3 willekeurige jaren in de buurt
-        function genereerJaarKnoppen(correctJaar) {
-            const grid = document.getElementById('year-grid');
-            grid.innerHTML = ''; // Maak leeg
-            
-            let jarenSet = new Set();
-            jarenSet.add(correctJaar);
-
-            // Voeg 3 willekeurige valse jaren toe (binnen een straal van 8 jaar van het echte jaar)
-            while (jarenSet.size < 4) {
-                const afwijking = Math.floor(Math.random() * 17) - 8; // Tussen -8 en +8
-                const nepJaar = correctJaar + afwijking;
-                if (nepJaar > 1950 && nepJaar <= 2026) {
-                    jarenSet.add(nepJaar);
-                }
-            }
-
-            // Maak er een array van en schud de volgorde willekeurig door elkaar
-            let keuzes = Array.from(jarenSet).sort(() => Math.random() - 0.5);
-
-            // Bouw de fysieke knoppen in de HTML
-            keuzes.forEach(jaar => {
-                const btn = document.createElement('button');
-                btn.className = 'year-btn';
-                btn.innerText = jaar;
-                btn.onclick = () => controleerJaarGok(jaar);
-                grid.appendChild(btn);
-            });
-
-            // Toon het hele keuzepanepel met een vloeiende overgang
-            document.getElementById('year-section').style.display = 'block';
-        }
-
-        function controleerJaarGok(gekozenJaar) {
-            const fb = document.getElementById('game-feedback');
-            fb.style.display = 'block';
-            
-            // Stop direct de muziek en de dansende VU-meter bij een antwoord
-            if (audioPlayer) { audioPlayer.pause(); }
-            stopVuMeter();
-            document.getElementById('vinyl-disc').style.animationPlayState = 'paused';
-            document.getElementById('year-section').style.display = 'none';
-
-            if (gekozenJaar === echtJaar) {
-                fb.className = "alert-box alert-success";
-                fb.innerHTML = `🔥 LEKKER! ${gekozenJaar} IS CORRECT!<br><small>+10 Punten</small>`;
-            } else {
-                fb.className = "alert-box alert-error";
-                fb.innerHTML = `❌ HELAAS! HET WAS ${echtJaar}.<br><small>Je koos ${gekozenJaar}</small>`;
-            }
+            bars.forEach(bar => { bar.style.height = '3px'; });
         }
     </script>
 </body>
