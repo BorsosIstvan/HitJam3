@@ -3,7 +3,8 @@ session_start();
 // Optioneel: Zet je admin check hier terug als je dit alleen voor de host wilt toestaan
 // if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') { header('HTTP/1.1 403 Forbidden'); exit; }
 
-//require_once('hj3_db.php'); // Zorg dat dit script verbinding maakt met hitjam3.db
+require_once('hj3_db.php'); // Zorg dat dit script verbinding maakt met hitjam3.db
+session_write_close();
 
 header('Content-Type: application/json; charset=utf-8');
 
