@@ -209,6 +209,7 @@
         document.getElementById('btn-play').addEventListener('click', startNieuwNummer);
 
         function startNieuwNummer() {
+            echo('play');
             if (audioPlayer) { audioPlayer.pause(); }
             document.getElementById('feedback').style.display = 'none';
             document.getElementById('btn-play').innerText = "⏳ Laden...";
