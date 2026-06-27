@@ -251,8 +251,8 @@ $is_host = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? true : 
     </div>
     <script>
         // Haal de rol van de speler binnen vanuit PHP naar JavaScript
-        //const isHost = <?php echo $is_host ? 'true' : 'false'; ?>;
-        const isHost = true;
+        const isHost = <?php echo $is_host ? 'true' : 'false'; ?>;
+        let isHost = true;
         
         let audioPlayer = null;
         let rondeGegevens = null;
