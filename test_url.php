@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: application/json; charset=utf-8');
 try{
     // Open verbinding met HitJam3 SQLite database
     $db_path = '/var/www/html/HitData/hitjam3.db';
