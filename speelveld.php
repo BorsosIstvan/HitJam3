@@ -3,49 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HitJam 3 - Speelveld</title>
+    <title>HitJam 3 - Premium Arcade</title>
     <style>
-        /* CSS Direct in het bestand: werkt altijd super snel op je Pi! */
+        /* Professioneel donker design met rood en neon-oranje accenten */
         body {
-            background-color: #0b0c10;
+            background-color: #050508;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            overflow-x: hidden;
         }
 
-        /* Top Bar */
+        /* Premium Header */
         header {
-            background-color: rgba(31, 40, 51, 0.6);
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(69, 243, 255, 0.2);
+            background: linear-gradient(180deg, #100b0b 0%, #050508 100%);
+            padding: 18px 20px;
+            border-bottom: 2px solid #ff3333;
+            box-shadow: 0 4px 20px rgba(255, 51, 51, 0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         header h1 {
             margin: 0;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 900;
-            letter-spacing: 1.5px;
-            color: #45f3ff;
+            letter-spacing: 2px;
+            color: #ff3333;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.6);
         }
-        header h1 span { color: #ffffff; }
-        .token-badge {
-            background-color: #1f2833;
-            color: #45f3ff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            border: 1px solid rgba(69, 243, 255, 0.3);
-        }
+        header h1 span { color: #ff6600; text-shadow: 0 0 10px rgba(255, 102, 0, 0.6); }
 
-        /* Centrale Audio Kaart */
+        /* Centrale Game Container */
         main {
             flex-grow: 1;
             display: flex;
@@ -53,263 +47,300 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            gap: 25px;
         }
-        .audio-card {
-            background-color: rgba(31, 40, 51, 0.5);
-            border: 1px solid #222;
+
+        /* De platen- en animatiekaart */
+        .arcade-card {
+            background: #0d0d13;
+            border: 2px solid #1a1a26;
             padding: 30px;
-            border-radius: 24px;
+            border-radius: 28px;
             width: 100%;
             max-width: 340px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,102,0,0.05);
+            position: relative;
+        }
+
+        /* Gloeiende Vinyl Schijf met Retro Groeven */
+        .vinyl-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 10px auto 25px auto;
         }
         .music-vinyl {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(45deg, #45f3ff, #1f2833);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #ff6600 0%, #111 10%, #000 11%, #151515 30%, #000 31%, #1c1c1c 50%, #000 70%, #ff3333 100%);
             border-radius: 50%;
-            margin: 15px auto;
+            box-shadow: 0 0 25px rgba(255, 51, 51, 0.3), inset 0 0 10px #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
-            box-shadow: 0 0 20px rgba(69, 243, 255, 0.2);
+            font-size: 40px;
         }
-        .btn-main {
-            background-color: #45f3ff;
-            color: #0b0c10;
+        /* Het middengat van de single */
+        .vinyl-center {
+            width: 35px;
+            height: 35px;
+            background-color: #0d0d13;
+            border: 3px solid #ff6600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Geanimeerde VU-Meter (Equalizer) */
+        .vu-meter {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4px;
+            height: 45px;
+            margin: 15px 0;
+            padding: 0 10px;
+        }
+        .vu-bar {
+            width: 8px;
+            height: 5px; /* Start laag */
+            background: linear-gradient(0deg, #ff6600 0%, #ff3333 80%, #ff0000 100%);
+            border-radius: 3px;
+            transition: height 0.1s ease;
+        }
+
+        /* Grote Actieknop */
+        .btn-arcade {
+            background: linear-gradient(135deg, #ff3333 0%, #ff6600 100%);
+            color: #ffffff;
             border: none;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 10px;
-        }
-        .btn-main:hover { transform: scale(1.05); }
-
-        /* Feedback meldingen */
-        .feedback {
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-weight: bold;
-            display: none;
-        }
-        .correct { background-color: #2e7d32; color: white; }
-        .wrong { background-color: #c62828; color: white; }
-
-        /* Tijdlijn Sectie onderaan */
-        footer {
-            background-color: rgba(31, 40, 51, 0.2);
-            border-top: 1px solid #111;
-            padding: 20px;
-        }
-        footer h3 {
-            margin: 0 0 12px 5px;
-            font-size: 11px;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #888;
-        }
-        .timeline-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-        /* Verberg scrollbar */
-        .timeline-container::-webkit-scrollbar { display: none; }
-        .timeline-container { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* De Song Kaarten in de tijdlijn */
-        .song-card {
-            min-width: 110px;
-            max-width: 110px;
-            height: 110px;
-            background: linear-gradient(#1f2833, #0b0c10);
-            border: 2px solid #444;
-            padding: 10px;
-            border-radius: 16px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .song-artist { font-size: 9px; font-weight: bold; color: #aaa; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .song-title { font-size: 11px; font-weight: 600; color: #fff; margin: 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .song-year { font-size: 13px; font-weight: 900; color: #45f3ff; background-color: rgba(69, 243, 255, 0.1); border: 1px solid rgba(69, 243, 255, 0.2); padding: 2px; border-radius: 6px; }
-
-        /* Plus Knoppen */
-        .plus-btn {
-            min-width: 40px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: rgba(69, 243, 255, 0.1);
-            border: 2px dashed rgba(69, 243, 255, 0.4);
-            color: #45f3ff;
-            font-size: 20px;
-            font-weight: bold;
+            border-radius: 30px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.4);
+            transition: all 0.2s ease;
         }
-        .plus-btn:hover {
-            background-color: #45f3ff;
-            color: #0b0c10;
-            border-style: solid;
-            transform: scale(1.1);
+        .btn-arcade:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 102, 0, 0.6);
         }
-        
-        /* CSS Animatie voor de vinyl disc */
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Jaartal Kiezer (HitJam2-stijl) */
+        .year-selector-section {
+            width: 100%;
+            max-width: 340px;
+            background: #0d0d13;
+            border: 2px solid #1a1a26;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            display: none; /* Komt pas in beeld als muziek speelt */
+        }
+        .year-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .year-btn {
+            background-color: #161622;
+            border: 1px solid #2d2d3f;
+            color: #fff;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .year-btn:hover {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            color: #000;
+        }
+
+        /* Feedback Popups */
+        .alert-box {
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        .alert-success { background-color: rgba(46, 125, 50, 0.2); border: 2px solid #2e7d32; color: #4caf50; text-shadow: 0 0 5px #2e7d32; }
+        .alert-error { background-color: rgba(198, 40, 40, 0.2); border: 2px solid #c62828; color: #ef5350; text-shadow: 0 0 5px #c62828; }
+
+        /* Draai-animatie voor vinyl */
+        @keyframes spin-vinyl {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
     <header>
         <h1>HITJAM <span>3</span></h1>
-        <div class="token-badge">⚡ 3 Tokens</div>
+        <div style="color: #ff6600; font-weight: bold;">⚡ ARCADE MODE</div>
     </header>
 
     <main>
-        <div class="audio-card">
-            <p style="font-size: 11px; color: #888; text-transform: uppercase; margin: 0;">HitJam3 Audio Speler</p>
-            <div class="music-vinyl" id="vinyl">🎵</div>
+        <!-- De Muziek / Animatie Kaart -->
+        <div class="arcade-card">
+            <div class="vinyl-container">
+                <div class="music-vinyl" id="vinyl-disc">
+                    <div class="vinyl-center">💿</div>
+                </div>
+            </div>
+
+            <!-- De fysieke VU-meter met 9 bewegende balkjes -->
+            <div class="vu-meter" id="vu-meter">
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+                <div class="vu-bar"></div>
+            </div>
             
-            <button class="btn-main" id="btn-play">▶️ Volgend Nummer</button>
-            
-            <div id="feedback" class="feedback"></div>
+            <button class="btn-arcade" id="btn-play">▶️ Start Muziek</button>
+            <div id="game-feedback" class="alert-box"></div>
+        </div>
+
+        <!-- Jaartal Kiezer (HitJam2 Stijl) -->
+        <div class="year-selector-section" id="year-section">
+            <span style="font-size: 12px; text-transform: uppercase; color: #888; font-weight: bold; tracking-letter: 1px;">Kies het juiste jaartal:</span>
+            <div class="year-grid" id="year-grid">
+                <!-- Wordt dynamisch gegenereerd in deel 2 -->
+            </div>
         </div>
     </main>
-
-    <footer>
-        <h3>Jouw Tijdlijn</h3>
-        <div class="timeline-container" id="timeline-container">
-            <!-- Wordt gevuld door JavaScript uit deel 2 -->
-        </div>
-    </footer>
     <script>
         let audioPlayer = null;
         let huidigSongId = null;
-
-        // Startpunt van de speler: alvast 1 kaart cadeau om mee te beginnen
-        let spelerTijdlijn = [
-            { id: 9999, artist: "Basis Jaar", title: "Startpunt", year: 2000 }
-        ];
+        let echtJaar = null;
+        let vuInterval = null;
 
         document.getElementById('btn-play').addEventListener('click', startNieuwNummer);
 
         function startNieuwNummer() {
+            // Reset oude status
             if (audioPlayer) { audioPlayer.pause(); }
-            document.getElementById('feedback').style.display = 'none';
+            stopVuMeter();
+            document.getElementById('game-feedback').style.display = 'none';
+            document.getElementById('year-section').style.display = 'none';
+            document.getElementById('vinyl-disc').style.animation = "none";
             document.getElementById('btn-play').innerText = "⏳ Laden...";
 
+            // Haal willekeurig nummer op uit je Raspberry Pi backend
             fetch('hj3_get_next_song.php')
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('btn-play').innerText = "▶️ Volgend Nummer";
+                    
                     if (data.status === 'success') {
                         huidigSongId = data.id;
+                        echtJaar = parseInt(data.year);
                         
-                        // Start Apple audio stream direct
+                        // Start Apple audio stream direct via de browser
                         audioPlayer = new Audio(data.preview_url);
                         audioPlayer.play();
                         
-                        // Laat de vinyl-disc visueel spinnen
-                        document.getElementById('vinyl').style.animation = "spin 2s linear infinite";
-                    }
-                });
-        }
-
-        function tekenTijdlijn() {
-            const container = document.getElementById('timeline-container');
-            container.innerHTML = '';
-
-            // Sorteer de kaarten altijd netjes chronologisch
-            spelerTijdlijn.sort((a, b) => a.year - b.year);
-
-            // Eerste plusknop aan de linkerkant
-            container.appendChild(maakPlusKnop(0, spelerTijdlijn[0].id));
-
-            spelerTijdlijn.forEach((card, index) => {
-                // Maak de songkaart aan
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'song-card';
-                cardDiv.innerHTML = `
-                    <div class="song-artist">${card.artist}</div>
-                    <div class="song-title">${card.title}</div>
-                    <div class="song-year">${card.year}</div>
-                `;
-                container.appendChild(cardDiv);
-
-                // Plusknop tussen de kaarten of helemaal aan het einde
-                const volgende = spelerTijdlijn[index + 1];
-                if (volgende) {
-                    container.appendChild(maakPlusKnop(card.id, volgende.id));
-                } else {
-                    container.appendChild(maakPlusKnop(card.id, 0));
-                }
-            });
-        }
-
-        function maakPlusKnop(beforeId, afterId) {
-            const btn = document.createElement('button');
-            btn.className = 'plus-btn';
-            btn.innerText = '+';
-            btn.onclick = () => controleerGok(beforeId, afterId);
-            return btn;
-        }
-
-        function controleerGok(beforeId, afterId) {
-            if (!huidigSongId) { alert("Start eerst een nummer!"); return; }
-
-            let formData = new FormData();
-            formData.append('player_id', 1); // Testen als speler 1
-            formData.append('current_song_id', huidigSongId);
-            formData.append('song_before_id', beforeId);
-            formData.append('song_after_id', afterId);
-
-            fetch('hj3_check_answer.php', { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    const fb = document.getElementById('feedback');
-                    fb.style.display = 'block';
-                    
-                    if (audioPlayer) { audioPlayer.pause(); }
-                    document.getElementById('vinyl').style.animation = "none";
-
-                    if (data.result === 'correct') {
-                        fb.className = "feedback correct";
-                        fb.innerHTML = `🎉 GOED! Het jaar was ${data.year}.`;
+                        // Activeer de animaties!
+                        document.getElementById('vinyl-disc').style.animation = "spin-vinyl 3s linear infinite";
+                        startVuMeter();
                         
-                        // Voeg het zojuist geraden nummer toe aan de lokale tijdlijn
-                        spelerTijdlijn.push({
-                            id: huidigSongId,
-                            artist: "Geraden",
-                            title: "Liedje",
-                            year: data.year
-                        });
-                        
-                        huidigSongId = null; // Reset ronde
-                        tekenTijdlijn();    // Teken de tijdlijn direct opnieuw!
+                        // Genereer de HitJam keuzeknoppen (HitJam2-stijl)
+                        genereerJaarKnoppen(echtJaar);
                     } else {
-                        fb.className = "feedback wrong";
-                        fb.innerHTML = `😢 FOUT! Het jaar was ${data.year}.`;
-                        huidigSongId = null;
+                        alert("Fout bij ophalen nummer: " + data.message);
                     }
                 });
         }
 
-        // Teken de start-tijdlijn direct in beeld
-        tekenTijdlijn();
+        // De VU-Meter Animatie logica
+        function startVuMeter() {
+            const bars = document.querySelectorAll('.vu-bar');
+            
+            // Verander de hoogte van de balkjes elke 80 milliseconden voor een vloeiend ritme
+            vuInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    // Genereer een willekeurige hoogte tussen de 10px en 45px
+                    const randomHoogte = Math.floor(Math.random() * 35) + 10;
+                    bar.style.height = randomHoogte + 'px';
+                });
+            }, 80);
+        }
+
+        function stopVuMeter() {
+            clearInterval(vuInterval);
+            const bars = document.querySelectorAll('.vu-bar');
+            bars.forEach(bar => { bar.style.height = '5px'; }); // Reset naar laagste stand
+        }
+
+        // Genereert 4 knoppen: 1 juiste en 3 willekeurige jaren in de buurt
+        function genereerJaarKnoppen(correctJaar) {
+            const grid = document.getElementById('year-grid');
+            grid.innerHTML = ''; // Maak leeg
+            
+            let jarenSet = new Set();
+            jarenSet.add(correctJaar);
+
+            // Voeg 3 willekeurige valse jaren toe (binnen een straal van 8 jaar van het echte jaar)
+            while (jarenSet.size < 4) {
+                const afwijking = Math.floor(Math.random() * 17) - 8; // Tussen -8 en +8
+                const nepJaar = correctJaar + afwijking;
+                if (nepJaar > 1950 && nepJaar <= 2026) {
+                    jarenSet.add(nepJaar);
+                }
+            }
+
+            // Maak er een array van en schud de volgorde willekeurig door elkaar
+            let keuzes = Array.from(jarenSet).sort(() => Math.random() - 0.5);
+
+            // Bouw de fysieke knoppen in de HTML
+            keuzes.forEach(jaar => {
+                const btn = document.createElement('button');
+                btn.className = 'year-btn';
+                btn.innerText = jaar;
+                btn.onclick = () => controleerJaarGok(jaar);
+                grid.appendChild(btn);
+            });
+
+            // Toon het hele keuzepanepel met een vloeiende overgang
+            document.getElementById('year-section').style.display = 'block';
+        }
+
+        function controleerJaarGok(gekozenJaar) {
+            const fb = document.getElementById('game-feedback');
+            fb.style.display = 'block';
+            
+            // Stop direct de muziek en de dansende VU-meter bij een antwoord
+            if (audioPlayer) { audioPlayer.pause(); }
+            stopVuMeter();
+            document.getElementById('vinyl-disc').style.animationPlayState = 'paused';
+            document.getElementById('year-section').style.display = 'none';
+
+            if (gekozenJaar === echtJaar) {
+                fb.className = "alert-box alert-success";
+                fb.innerHTML = `🔥 LEKKER! ${gekozenJaar} IS CORRECT!<br><small>+10 Punten</small>`;
+            } else {
+                fb.className = "alert-box alert-error";
+                fb.innerHTML = `❌ HELAAS! HET WAS ${echtJaar}.<br><small>Je koos ${gekozenJaar}</small>`;
+            }
+        }
     </script>
 </body>
 </html>
