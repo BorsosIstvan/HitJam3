@@ -37,6 +37,7 @@
     </div>
     <script>
         let audioPlayer = null;
+        const songDisplay = document.getElementById('song-display');
         songDisplay.innerHTML = "Press play ";
 
         document.getElementById('btn-play').addEventListener('click', haalNummerOp);
