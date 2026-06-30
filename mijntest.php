@@ -37,8 +37,6 @@
     </div>
     <script>
         let audioPlayer = null;
-        const songDisplay = document.getElementById('song-display');
-        songDisplay.innerHTML = "Press play ";
 
         document.getElementById('btn-play').addEventListener('click', haalNummerOp);
         document.getElementById('btn-stop').addEventListener('click', stopAudio);
@@ -46,7 +44,7 @@
         function haalNummerOp() {
             const songDisplay = document.getElementById('song-display');
             stopAudio(); // Stop eventuele oude muziek
-            songDisplay.innerHTML = "Playing ";
+            songDisplay.style.display = 'block';
 
             // Haal asynchroon (AJAX) data op bij je Raspberry Pi script [1]
             fetch('hj3_get_next_song.php')
@@ -67,15 +65,15 @@
                                 toonFeedback("Klik ergens op de pagina om audio af te spelen (Browser beveiliging)", "error");
                             });
                         } else {
-                            //songDisplay.innerHTML += "<br><span style='color:#e63946;'>❌ Geen preview_url gevonden voor dit nummer bij Apple!</span>";
+                            songDisplay.innerHTML += "<br><span style='color:#e63946;'>❌ Geen preview_url gevonden voor dit nummer bij Apple!</span>";
                             fallbackBtn.style.display = 'inline-block'; // Toon de skip-knop
                         }
                     } else {
-                        //songDisplay.innerHTML = "Fout: " + data.message;
+                        songDisplay.innerHTML = "Fout: " + data.message;
                     }
                 })
                 .catch(error => {
-                    //songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
+                    songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
                     console.error(error);
                 });
         }
