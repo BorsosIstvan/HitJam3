@@ -42,47 +42,48 @@
         document.getElementById('btn-stop').addEventListener('click', stopAudio);
 
         function haalNummerOp() {
-        stopAudio(); // Stop eventuele oude muziek
+            const songDisplay = document.getElementById('song-display');
+            stopAudio(); // Stop eventuele oude muziek
 
-        // Haal asynchroon (AJAX) data op bij je Raspberry Pi script [1]
-        fetch('hj3_get_next_song.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    huidigSongId = data.id;
-                    
-                    // Toon de info (voor de admin/testomgeving)
-                    songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
-                    //answeringCard.style.display = 'block';
+            // Haal asynchroon (AJAX) data op bij je Raspberry Pi script [1]
+            fetch('hj3_get_next_song.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        huidigSongId = data.id;
+                        
+                        // Toon de info (voor de admin/testomgeving)
+                        songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
+                        //answeringCard.style.display = 'block';
 
-                    // Check of er een werkende iTunes link is meegekomen
-                    if (data.preview_url) {
-                        // Start de native browser audioplayer direct op met de Apple link!
-                        audioPlayer = new Audio(data.preview_url);
-                        audioPlayer.play().catch(e => {
-                            toonFeedback("Klik ergens op de pagina om audio af te spelen (Browser beveiliging)", "error");
-                        });
+                        // Check of er een werkende iTunes link is meegekomen
+                        if (data.preview_url) {
+                            // Start de native browser audioplayer direct op met de Apple link!
+                            audioPlayer = new Audio(data.preview_url);
+                            audioPlayer.play().catch(e => {
+                                toonFeedback("Klik ergens op de pagina om audio af te spelen (Browser beveiliging)", "error");
+                            });
+                        } else {
+                            //songDisplay.innerHTML += "<br><span style='color:#e63946;'>❌ Geen preview_url gevonden voor dit nummer bij Apple!</span>";
+                            fallbackBtn.style.display = 'inline-block'; // Toon de skip-knop
+                        }
                     } else {
-                        //songDisplay.innerHTML += "<br><span style='color:#e63946;'>❌ Geen preview_url gevonden voor dit nummer bij Apple!</span>";
-                        fallbackBtn.style.display = 'inline-block'; // Toon de skip-knop
+                        //songDisplay.innerHTML = "Fout: " + data.message;
                     }
-                } else {
-                    //songDisplay.innerHTML = "Fout: " + data.message;
-                }
-            })
-            .catch(error => {
-                //songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
-                console.error(error);
-            });
-    }
-
-    function stopAudio() {
-        if (audioPlayer) {
-            audioPlayer.pause();
-            audioPlayer = null;
+                })
+                .catch(error => {
+                    //songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
+                    console.error(error);
+                });
         }
-    }
-    </script>
+
+        function stopAudio() {
+            if (audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer = null;
+            }
+        }
+        </script>
 
 </body>
 </html>
