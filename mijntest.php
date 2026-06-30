@@ -43,8 +43,10 @@
 
         function haalNummerOp() {
             const songDisplay = document.getElementById('song-display');
+            const playButton = document.getElementById('btn-play')
             stopAudio(); // Stop eventuele oude muziek
             songDisplay.style.display = 'block';
+            playButton.innerHTML = 'Nieuwe hit';
 
             // Haal asynchroon (AJAX) data op bij je Raspberry Pi script [1]
             fetch('hj3_get_next_song.php')
