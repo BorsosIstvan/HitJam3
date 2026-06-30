@@ -84,7 +84,7 @@
             if (audioPlayer) {
                 audioPlayer.pause();
                 audioPlayer = null;
-                playButtin.innerHTML = 'Perss to play';
+                playButton.innerHTML = 'Perss to play';
             }
         }
         </script>
