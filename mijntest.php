@@ -52,7 +52,7 @@
                     huidigSongId = data.id;
                     
                     // Toon de info (voor de admin/testomgeving)
-                    //songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
+                    songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
                     //answeringCard.style.display = 'block';
 
                     // Check of er een werkende iTunes link is meegekomen
