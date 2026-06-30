@@ -64,7 +64,7 @@
 
         function haalNummerOp() {
             stopAudio(); // Stop eventuele oude muziek
-            verbergFeedback();
+            //verbergFeedback();
             
             const songDisplay = document.getElementById('song-display');
             const fallbackBtn = document.getElementById('btn-fallback');
