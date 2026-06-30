@@ -82,8 +82,8 @@
                         huidigSongId = data.id;
                         
                         // Toon de info (voor de admin/testomgeving)
-                        songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
-                        answeringCard.style.display = 'block';
+                        //songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
+                        //answeringCard.style.display = 'block';
 
                         // Check of er een werkende iTunes link is meegekomen
                         if (data.preview_url) {
@@ -97,11 +97,11 @@
                             fallbackBtn.style.display = 'inline-block'; // Toon de skip-knop
                         }
                     } else {
-                        songDisplay.innerHTML = "Fout: " + data.message;
+                        //songDisplay.innerHTML = "Fout: " + data.message;
                     }
                 })
                 .catch(error => {
-                    songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
+                    //songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
                     console.error(error);
                 });
         }
