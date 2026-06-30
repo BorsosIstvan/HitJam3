@@ -39,6 +39,7 @@
         let audioPlayer = null;
 
         document.getElementById('btn-play').addEventListener('click', haalNummerOp);
+        document.getElementById('btn-stop').addEventListener('click', stopAudio);
 
         function haalNummerOp() {
         stopAudio(); // Stop eventuele oude muziek
