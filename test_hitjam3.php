@@ -70,8 +70,8 @@
             const fallbackBtn = document.getElementById('btn-fallback');
             const answeringCard = document.getElementById('answering-card');
             
-            songDisplay.style.display = 'block';
-            songDisplay.innerHTML = "⏳ Database doorzoeken...";
+            //songDisplay.style.display = 'block';
+            //songDisplay.innerHTML = "⏳ Database doorzoeken...";
             fallbackBtn.style.display = 'none';
 
             // Haal asynchroon (AJAX) data op bij je Raspberry Pi script [1]
