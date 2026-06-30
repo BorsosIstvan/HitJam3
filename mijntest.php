@@ -51,8 +51,8 @@
                     huidigSongId = data.id;
                     
                     // Toon de info (voor de admin/testomgeving)
-                    songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
-                    answeringCard.style.display = 'block';
+                    //songDisplay.innerHTML = `<strong>${data.artist}</strong> - ${data.title} <br><small>Echt jaar: ${data.year}</small>`;
+                    //answeringCard.style.display = 'block';
 
                     // Check of er een werkende iTunes link is meegekomen
                     if (data.preview_url) {
@@ -62,11 +62,11 @@
                             toonFeedback("Klik ergens op de pagina om audio af te spelen (Browser beveiliging)", "error");
                         });
                     } else {
-                        songDisplay.innerHTML += "<br><span style='color:#e63946;'>❌ Geen preview_url gevonden voor dit nummer bij Apple!</span>";
+                        //songDisplay.innerHTML += "<br><span style='color:#e63946;'>❌ Geen preview_url gevonden voor dit nummer bij Apple!</span>";
                         fallbackBtn.style.display = 'inline-block'; // Toon de skip-knop
                     }
                 } else {
-                    songDisplay.innerHTML = "Fout: " + data.message;
+                    //songDisplay.innerHTML = "Fout: " + data.message;
                 }
             })
             .catch(error => {
