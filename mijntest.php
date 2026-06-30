@@ -37,16 +37,16 @@
     </div>
     <script>
         let audioPlayer = null;
+        const playButton = document.getElementById('btn-play')
 
         document.getElementById('btn-play').addEventListener('click', haalNummerOp);
         document.getElementById('btn-stop').addEventListener('click', stopAudio);
 
         function haalNummerOp() {
             const songDisplay = document.getElementById('song-display');
-            const playButton = document.getElementById('btn-play')
             stopAudio(); // Stop eventuele oude muziek
             songDisplay.style.display = 'block';
-            playButton.innerHTML = 'Nieuwe hit';
+            playButton.innerHTML = 'Playing ...';
 
             // Haal asynchroon (AJAX) data op bij je Raspberry Pi script [1]
             fetch('hj3_get_next_song.php')
