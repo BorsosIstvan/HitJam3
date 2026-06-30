@@ -70,7 +70,7 @@
                 }
             })
             .catch(error => {
-                songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
+                //songDisplay.innerHTML = "Kon geen verbinding maken met de Pi backend.";
                 console.error(error);
             });
     }
